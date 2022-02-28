@@ -19,6 +19,13 @@ export DATABASE_URL="postgresql://username:password@localhost:5432/hooksaurus_au
 export HMAC_KEY="some-long-secret-token"
 ```
 
+In addition, you can set `RUST_LOG` in order to change the log-level:
+
+```sh
+$ export RUST_LOG="hooksaurus_auctions=info,tower_http=warn"
+
+```
+
 ### Database and Migrations
 
 This project is using `sqlx` for querying database tables and [`sqlx-cli`](https://github.com/launchbadge/sqlx/blob/6e1c7a999a514be2df809f36f26bd5758b96c448/sqlx-cli/README.md#enable-building-in-offline-mode-with-query) for running migrations. To work with `sqlx-cli`, you will need an environment variable `DATABASE_URL` in your environment, which points to your local database.
@@ -43,9 +50,9 @@ $ sqlx database create
 To create a new _reversible_ migration, run the following:
 
 ```sh
-$ sqlx migrate add -r base_user_tables
-Creating migrations/20211001154420_base_user_tables.up.sql
-Creating migrations/20211001154420_base_user_tables.down.sql
+$ sqlx migrate add -r initial_table_setup
+Creating migrations/20220227182018_initial_table_setup.up.sql
+Creating migrations/20220227182018_initial_table_setup.down.sql
 
 Congratulations on creating your first migration!
 ```
