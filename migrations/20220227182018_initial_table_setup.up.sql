@@ -34,9 +34,43 @@ begin
 end;
 $$ language plpgsql;
 
+
+-- etag trigger to automatically set a new one on each update
+-- this makes a lot easier for tables to report on each object
+-- whether it has changed for the user or not.
+--
+-- after a `CREATE TABLE`.
+create or replace function set_etag()
+    returns trigger as
+$$
+begin
+    NEW.etag = uuid_generate_v1mc();
+    return NEW;
+end;
+$$ language plpgsql;
+
+create or replace function trigger_etag(tablename regclass)
+    returns void as
+$$
+begin
+    execute format('CREATE TRIGGER set_etag
+        BEFORE UPDATE
+        ON %s
+        FOR EACH ROW
+        WHEN (OLD is distinct from NEW)
+    EXECUTE FUNCTION set_etag();', tablename);
+end;
+$$ language plpgsql;
+
 -- Finally, this is a text collation that sorts text case-insensitively, useful for `UNIQUE` indexes
 -- over things like usernames and emails, without needing to remember to do case-conversion.
 create collation  if not exists case_insensitive (provider = icu, locale = 'und-u-ks-level2', deterministic = false);
+
+-- COMMON FIELDS BELOW --
+-- - created:  timestamptz when object created at
+-- - modified: timestamptz when object last modified at
+-- - etag:     identifier that signals whether object has been modified
+
 
 -- ADDRESS TABLE --
 create table address (
@@ -51,8 +85,11 @@ create table address (
     lat_long              point,
 
     created_at      timestamptz not null default now(),
-    updated_at      timestamptz
+    updated_at      timestamptz,
+    etag            uuid not null
 );
+SELECT trigger_updated_at('address');
+select trigger_etag('address');
 
 -- ORGANIZATION TABLE --
 -- Organizations are businesses or organizations that
@@ -73,9 +110,12 @@ create table organization
     -- need address
     primary_address_id uuid not null references "address" (address_id) on delete set null,
     -- defaults
-    created_at      timestamptz not null default now(),
-    updated_at      timestamptz not null default now()
+    created_at    timestamptz not null default now(),
+    updated_at    timestamptz not null default now(),
+    etag          uuid not null
 );
+SELECT trigger_updated_at('organization');
+select trigger_etag('organization');
 
 -- USER TABLE --
 -- users can place bids, browse auctions, or modify their
@@ -103,11 +143,13 @@ create table "user"
     -- need address to populate for shipping
     address_id uuid not null references "address" (address_id) on delete set null,
     -- defaults
-    created_at    timestamptz                            not null default now(),
-    updated_at    timestamptz not null default now()
+    created_at    timestamptz not null default now(),
+    updated_at    timestamptz not null default now(),
+    etag          uuid not null
 );
 
 SELECT trigger_updated_at('"user"');
+select trigger_etag('"user"');
 
 -- AUCTION TABLE --
 -- An auction is a collection of auctions with a start and end date 10 days from now (by default)
@@ -120,9 +162,12 @@ create table auction
     end_date    timestamptz not null default now() + interval '10' day,
     benefits_organization_id uuid references organization (organization_id) on delete set null,
     -- defaults
-    created_at timestamptz not null default now(),
-    updated_at  timestamptz not null default now()
+    created_at  timestamptz not null default now(),
+    updated_at  timestamptz not null default now(),
+    etag        uuid not null
 );
+SELECT trigger_updated_at('auction');
+select trigger_etag('auction');
 
 -- AUCTION ITEM TABLE --
 create table auction_item
@@ -136,8 +181,9 @@ create table auction_item
     expected_retail_value  numeric(12, 4) not null default '1.0',
     -- defaults to zero, but can be set higher. Could also call this a "target bid"?
     minimum_bid_amount  numeric(12, 4) not null default '0.0',
-    -- some things may be immediately winnable by bid for a fixed price. nullable usually.
-    auction_ending_bid_amount  numeric(12, 4),
+    -- some things may be immediately winnable by bid for a fixed price.
+    -- this is the "buy it now" price, nullable.
+    buy_it_now_amount  numeric(12, 4),
 
     -- title, description, tags (for searching), photos
     title       text        not null,
@@ -151,14 +197,16 @@ create table auction_item
     benefits_organization_id       uuid references organization (organization_id) on delete set null,
     -- this item can potentially only be bid on while active; We can set the active start/end date here.
     active_start_date  timestamptz not null default now(),
-    active_end_date  timestamptz   not null,
+    active_end_date    timestamptz   not null,
 
     -- defaults
-    created_at timestamptz not null default now(),
-    updated_at  timestamptz not null default now()
+    created_at  timestamptz not null default now(),
+    updated_at  timestamptz not null default now(),
+    etag        uuid not null
 );
 
 select trigger_updated_at('auction_item');
+select trigger_etag('auction_item');
 
 -- This should speed up searching with tags.
 create index auction_item_tags_gin on auction_item using gin (tag_list);
@@ -183,11 +231,14 @@ create table auction_item_bid
     -- The winning bid is not necesarily the largest: someone may back out after bidding.
     -- This flag will likely get set by an admin at auction or item-bidding close.
     is_winning_bid      boolean     not null default false,
-    created_at          timestamptz not null default now(),
-    updated_at  timestamptz not null default now()
+    created_at  timestamptz not null default now(),
+    updated_at  timestamptz not null default now(),
+    etag        uuid not null
 );
 
 select trigger_updated_at('auction_item_bid');
+select trigger_etag('auction_item_bid');
+
 -- This should speed up searching for all bids for an item (and probably all bids for an auction)
 create index auction_item_bid_auction_item_ids on auction_item_bid using btree (auction_item_id);
 
@@ -206,10 +257,12 @@ create table article
     tag_list    text[]      not null,
     featured_image_filepath text not null,
     created_at  timestamptz not null default now(),
-    updated_at  timestamptz not null default now()
+    updated_at  timestamptz not null default now(),
+    etag        uuid not null
 );
 
 select trigger_updated_at('article');
+select trigger_etag('article');
 
 -- This should speed up searching with tags.
 create index article_tags_gin on article using gin (tag_list);
@@ -233,6 +286,9 @@ create table auction_item_delivery
     -- defaults
     created_at      timestamptz not null default now(),
     updated_at      timestamptz not null default now(),
-    -- Enforce uniqueness like with `follow`.
+    etag            uuid not null,
+    -- Enforce uniqueness like.
     primary key (auction_item_bid_id, user_id)
 );
+select trigger_updated_at('auction_item_delivery');
+select trigger_etag('auction_item_delivery');

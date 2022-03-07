@@ -1,0 +1,11 @@
+body {
+    background-color: #FDF6E3;
+}
+
+.htmx-settling img {
+    opacity: 0;
+}
+
+img {
+    transition: opacity 300ms ease-in;
+}

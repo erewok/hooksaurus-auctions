@@ -3,15 +3,12 @@ use clap::Parser;
 use sqlx::postgres::PgPoolOptions;
 
 use hooksaurus_auctions::config::Config;
-use hooksaurus_auctions::http;
+use hooksaurus_auctions::endpoints;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var(
-            "RUST_LOG",
-            "hooksaurus_auctions=debug,tower_http=debug",
-        )
+        std::env::set_var("RUST_LOG", "hooksaurus_auctions=debug,tower_http=debug")
     }
     tracing_subscriber::fmt::init();
 
@@ -24,7 +21,7 @@ async fn main() -> anyhow::Result<()> {
 
     sqlx::migrate!().run(&db).await?;
 
-    http::serve(config, db).await?;
+    endpoints::serve(config, db).await?;
 
     Ok(())
 }
