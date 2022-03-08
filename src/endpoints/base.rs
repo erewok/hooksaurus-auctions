@@ -1,6 +1,5 @@
 use axum::{
     extract::{Extension},
-    error_handling::HandleErrorLayer,
     http::StatusCode,
     response::Html,
     routing::{get, get_service},

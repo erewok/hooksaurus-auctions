@@ -82,7 +82,8 @@ create table address (
     state_province_county text not null,
     postal_code           text,
     country_code          text,
-    lat_long              point,
+    latitude              double precision,
+    longitude             double precision,
 
     created_at      timestamptz not null default now(),
     updated_at      timestamptz,
@@ -178,12 +179,12 @@ create table auction_item
     -- Some items are part of "baskets" of items: a "basket" is an auction_item that these roll up to
     basket_id        uuid references "auction_item" (auction_item_id) on delete cascade,
     -- Expected retail value
-    expected_retail_value  numeric(12, 4) not null default '1.0',
+    expected_retail_value  decimal(15, 6) not null default '1.0',
     -- defaults to zero, but can be set higher. Could also call this a "target bid"?
-    minimum_bid_amount  numeric(12, 4) not null default '0.0',
+    minimum_bid_amount  decimal(15, 6) not null default '0.0',
     -- some things may be immediately winnable by bid for a fixed price.
     -- this is the "buy it now" price, nullable.
-    buy_it_now_amount  numeric(12, 4),
+    buy_it_now_amount  decimal(15, 6),
 
     -- title, description, tags (for searching), photos
     title       text        not null,
@@ -225,9 +226,9 @@ create table auction_item_bid
     -- Do not enforce uniqueness like with each bid per user like via a composite primary key.
     -- Users can submit multiple bids for the same item, in other words.
     user_id             uuid        not null references "user" (user_id) on delete cascade,
-    amount              numeric(12, 4)      not null default '0.0',
+    amount              decimal(15, 6)      not null default '0.0',
     -- if someone sets a MAX bid amount, we can automatically increase their bid in relation to other bids
-    max_bid_amount      numeric(12, 4),
+    max_bid_amount      decimal(15, 6),
     -- The winning bid is not necesarily the largest: someone may back out after bidding.
     -- This flag will likely get set by an admin at auction or item-bidding close.
     is_winning_bid      boolean     not null default false,
@@ -241,6 +242,33 @@ select trigger_etag('auction_item_bid');
 
 -- This should speed up searching for all bids for an item (and probably all bids for an auction)
 create index auction_item_bid_auction_item_ids on auction_item_bid using btree (auction_item_id);
+
+-- SHIPPING of ITEMS IS HANDLED HERE --
+create table auction_item_delivery
+(
+    auction_item_bid_id uuid not null references "auction_item_bid" (auction_item_bid_id) on delete cascade,
+    user_id            uuid not null references "auction_item" (auction_item_id) on delete cascade,
+    shipping_address   uuid not null references "address" (address_id) on delete cascade,
+    shipping_fee       decimal(15, 6) default '0.0',
+    shipped_datetime   timestamptz,
+    delivered          timestamptz,
+    shipping_exception text,
+    sms_updates_number text,
+    email_contact      text,
+    signature_name     text,
+    signed_for_by      text,
+    carrier            text,
+    tracking_number    text,
+    -- defaults
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+    etag            uuid not null,
+    -- Enforce uniqueness like.
+    primary key (auction_item_bid_id, user_id)
+);
+select trigger_updated_at('auction_item_delivery');
+select trigger_etag('auction_item_delivery');
+
 
 -- AUCTION ARTICLES --
 -- for  news / posts / updates
@@ -266,29 +294,3 @@ select trigger_etag('article');
 
 -- This should speed up searching with tags.
 create index article_tags_gin on article using gin (tag_list);
-
--- SHIPPING of ITEMS IS HANDLED HERE --
-create table auction_item_delivery
-(
-    auction_item_bid_id uuid not null references "auction_item_bid" (auction_item_bid_id) on delete cascade,
-    user_id            uuid not null references "auction_item" (auction_item_id) on delete cascade,
-    shipping_address   uuid not null references "address" (address_id) on delete cascade,
-    shipping_fee       numeric(12, 4) default '0.0',
-    shipped_datetime   timestamptz,
-    delivered          timestamptz,
-    shipping_exception text,
-    sms_updates_number text,
-    email_contact      text,
-    signature_name     text,
-    signed_for_by      text,
-    carrier            text,
-    tracking_number    text,
-    -- defaults
-    created_at      timestamptz not null default now(),
-    updated_at      timestamptz not null default now(),
-    etag            uuid not null,
-    -- Enforce uniqueness like.
-    primary key (auction_item_bid_id, user_id)
-);
-select trigger_updated_at('auction_item_delivery');
-select trigger_etag('auction_item_delivery');

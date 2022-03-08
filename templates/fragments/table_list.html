@@ -1,0 +1,8 @@
+<ul hx-boost="true" class="uk-list uk-list-disc uk-list-primary">
+    {% for table in table_list %}
+    <li>
+        <h3><a href="/admin/tables/{{ table }}">{{ table|title }}</a>
+            <h3>
+    </li>
+    {% endfor %}
+</ul>
