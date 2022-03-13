@@ -2,9 +2,12 @@ use crate::db::tables;
 use sqlx::types::{time::OffsetDateTime, Decimal};
 use uuid::Uuid;
 
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
+pub struct AuctionId(Uuid);
+
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Auction {
-    pub auction_id: Uuid,
+    pub auction_id: AuctionId,
     pub title: String,
     pub description: String,
     #[serde(
@@ -17,7 +20,7 @@ pub struct Auction {
         serialize_with = "tables::serialize_dt"
     )]
     pub end_date: OffsetDateTime,
-    pub benefits_organization_id: Option<Uuid>,
+    pub benefits_organization_id: Option<super::organization::OrganizationId>,
     #[serde(
         deserialize_with = "tables::deserialize_dt",
         serialize_with = "tables::serialize_dt"
@@ -28,16 +31,19 @@ pub struct Auction {
         serialize_with = "tables::serialize_dt"
     )]
     pub updated_at: OffsetDateTime,
-    pub etag: Uuid,
+    pub etag: super::Etag,
 }
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
+pub struct AuctionItemId(Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct AuctionItem {
-    pub auction_item_id: Uuid,
+    pub auction_item_id: AuctionItemId,
     // relates to this auction
-    pub auction_id: Uuid,
+    pub auction_id: AuctionId,
     // This may be foreign-keyed to _another_ AuctionItem, which is called its "basket"
-    pub basket_id: Uuid,
+    pub basket_id: Option<AuctionItemId>,
 
     // Monetary amounts relating to this item
     pub expected_retail_value: Decimal,
@@ -50,8 +56,8 @@ pub struct AuctionItem {
     pub featured_image_filepath: String,
     pub image_dir: String,
     pub tag_list: Vec<String>,
-    pub donated_by_organization_id: Uuid,
-    pub benefits_organization_id: Uuid,
+    pub donated_by_organization_id: Option<super::organization::OrganizationId>,
+    pub benefits_organization_id: Option<super::organization::OrganizationId>,
 
     #[serde(
         deserialize_with = "tables::deserialize_dt",
@@ -73,14 +79,17 @@ pub struct AuctionItem {
         serialize_with = "tables::serialize_dt"
     )]
     pub updated_at: OffsetDateTime,
-    pub etag: Uuid,
+    pub etag: super::Etag,
 }
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
+pub struct AuctionItemBidId(Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct AuctionItemBid {
-    auction_item_bid_id: Uuid,
+    auction_item_bid_id: AuctionItemBidId,
     // relates to this auction_item
-    auction_item_id: Uuid,
+    auction_item_id: AuctionItemId,
     // User who made this bid
     user_id: Uuid,
 
@@ -101,7 +110,7 @@ pub struct AuctionItemBid {
         serialize_with = "tables::serialize_dt"
     )]
     updated_at: OffsetDateTime,
-    etag: Uuid,
+    pub etag: super::Etag,
 }
 
 /// Represents a delivery request for this auction item
@@ -110,11 +119,11 @@ pub struct AuctionItemBid {
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct AuctionItemDelivery {
     // Bid this delivery relates to
-    auction_item_bid_id: Uuid,
+    auction_item_bid_id: AuctionItemBidId,
     // User who made this bid
     user_id: Uuid,
     // Shipping address for delivery
-    shipping_address: Uuid,
+    shipping_address: super::address::AddressId,
     shipping_fee: Option<Decimal>,
     #[serde(
         deserialize_with = "tables::deserialize_optional_datetime",
@@ -145,5 +154,5 @@ pub struct AuctionItemDelivery {
         serialize_with = "tables::serialize_dt"
     )]
     updated_at: OffsetDateTime,
-    etag: Uuid,
+    pub etag: super::Etag,
 }

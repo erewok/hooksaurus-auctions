@@ -1,31 +1,35 @@
+use crate::db::tables::{deserialize_dt, serialize_dt};
 use sqlx::types::time::OffsetDateTime;
 use uuid::Uuid;
-use crate::db::tables::{deserialize_dt, serialize_dt};
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
 #[sqlx(type_name = "text")]
 pub enum OrgType {
     Business,
     FarmAnimalSanctuary,
-    NonProfit
+    NonProfit,
 }
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
+
+pub struct OrganizationId(Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Organization {
-    organization_id: Uuid,
-    org_type: OrgType,
-    name: String,
-    description: Option<String>,
-    image: Option<String>,
-    email: String,
-    website: String,
-    contact_name: Option<String>,
-    phone_number: Option<String>,
-    alt_phone_number: Option<String>,
-    primary_address_id: Uuid,
+    pub organization_id: OrganizationId,
+    pub org_type: OrgType,
+    pub name: String,
+    pub description: Option<String>,
+    pub image: Option<String>,
+    pub email: String,
+    pub website: String,
+    pub contact_name: Option<String>,
+    pub phone_number: Option<String>,
+    pub alt_phone_number: Option<String>,
+    pub primary_address_id: super::address::AddressId,
     #[serde(deserialize_with = "deserialize_dt", serialize_with = "serialize_dt")]
-    created_at: OffsetDateTime,
+    pub created_at: OffsetDateTime,
     #[serde(deserialize_with = "deserialize_dt", serialize_with = "serialize_dt")]
-    updated_at: OffsetDateTime,
-    etag: Uuid
+    pub updated_at: OffsetDateTime,
+    pub etag: super::Etag,
 }

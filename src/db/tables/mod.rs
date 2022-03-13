@@ -1,12 +1,16 @@
 use serde::de;
 use sqlx::types::time::OffsetDateTime;
 use std::fmt;
+use uuid::Uuid;
 
 pub mod address;
 pub mod article;
 pub mod auction;
 pub mod organization;
 pub mod user;
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
+pub struct Etag(Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 #[serde(rename_all = "kebab-case")]
