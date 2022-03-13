@@ -39,8 +39,8 @@ pub async fn serve(config: Config, db: PgPool) -> anyhow::Result<()> {
             .layer(TraceLayer::new_for_http())
             .layer(
                 CorsLayer::new()
-                    .allow_origin(Origin::exact("http://localhost:3000".parse().unwrap()))
-                    .allow_methods(vec![Method::GET, Method::POST])
+                    .allow_origin(Origin::exact("http://localhost:8000".parse().unwrap()))
+                    .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
                     .allow_headers(Any),
             ),
     );

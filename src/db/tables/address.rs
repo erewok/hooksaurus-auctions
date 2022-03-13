@@ -23,3 +23,16 @@ pub struct Address {
     pub updated_at: OffsetDateTime,
     pub etag: super::Etag,
 }
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct AddressFromForm {
+    pub street_address1: String,
+    pub street_address2: Option<String>,
+    pub street_address3: Option<String>,
+    pub city: String,
+    pub state_province_county: String,
+    pub postal_code: Option<String>,
+    pub country_code: Option<String>,
+    pub latitude: Option<String>,
+    pub longitude: Option<String>,
+}

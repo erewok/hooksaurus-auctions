@@ -149,8 +149,10 @@ async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>)
     Html(rendered)
 }
 
-async fn insert_address(form: Form<tables::address::Address>) -> (StatusCode, Html<String>) {
-    let address: tables::address::Address = form.0;
+async fn insert_address(
+    form: Form<tables::address::AddressFromForm>,
+) -> (StatusCode, Html<String>) {
+    let address: tables::address::AddressFromForm = form.0;
     event!(Level::INFO, event_msg = "Insert address called", address=?address);
     (StatusCode::ACCEPTED, Html("".to_string()))
 }
