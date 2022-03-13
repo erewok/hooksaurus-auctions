@@ -18,7 +18,7 @@ pub enum Table {
     AuctionItemBid,
     AuctionItemDelivery,
     Organization,
-    User
+    User,
 }
 impl Table {
     pub fn get_table_list() -> Vec<String> {
@@ -30,8 +30,9 @@ impl Table {
             Table::AuctionItemBid,
             Table::AuctionItemDelivery,
             Table::Organization,
-            Table::User
-        ].iter()
+            Table::User,
+        ]
+        .iter()
         .map(|t| t.to_string())
         .collect()
     }
@@ -62,10 +63,14 @@ impl fmt::Display for Table {
             Table::Organization => write!(f, "Organization"),
             Table::User => write!(f, "User"),
         }
-
     }
 }
 
+impl Default for Table {
+    fn default() -> Self {
+        Table::Organization
+    }
+}
 
 // Custom datetime deserializer
 struct DateTimeFromCustomFormatVisitor;
@@ -88,7 +93,7 @@ impl<'de> de::Visitor<'de> for DateTimeFromCustomFormatVisitor {
     where
         E: de::Error,
     {
-        match OffsetDateTime::parse(value, "%d-%b-%Y %H:%M:%SZ") {
+        match OffsetDateTime::parse(value, "%Y-%m-%d %H:%M:%SZ") {
             Ok(odt) => Ok(odt),
             Err(e) => Err(E::custom(format!("Parse error {} for {}", e, value))),
         }
@@ -134,7 +139,6 @@ pub fn serialize_option_dt<S: serde::Serializer>(
         Some(dt) => serialize_dt(dt, serializer),
         None => serializer.serialize_none(),
     }
-
 }
 
 // Custom datetime serializer
@@ -142,5 +146,5 @@ pub fn serialize_dt<S: serde::Serializer>(
     dt: &OffsetDateTime,
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
-    serializer.serialize_str(dt.format("%Y-%m-%d %H:%M:%S.0000z").as_str())
+    serializer.serialize_str(dt.format("%Y-%m-%d %H:%M:%SZ").as_str())
 }

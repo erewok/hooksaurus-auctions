@@ -6,6 +6,8 @@ use sqlx::error::DatabaseError;
 use std::borrow::Cow;
 use std::collections::HashMap;
 
+pub type Result<T, E = Error> = std::result::Result<T, E>;
+
 /// A common error type that can be used throughout the API.
 ///
 /// Can be returned in a `Result` from an API handler function.

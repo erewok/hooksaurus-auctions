@@ -47,16 +47,6 @@ $ sqlx database create
 # No output
 ```
 
-To create a new _reversible_ migration, run the following:
-
-```sh
-$ sqlx migrate add -r initial_table_setup
-Creating migrations/20220227182018_initial_table_setup.up.sql
-Creating migrations/20220227182018_initial_table_setup.down.sql
-
-Congratulations on creating your first migration!
-```
-
 To run all migrations, run the following:
 
 ```sh
@@ -79,7 +69,17 @@ $ sqlx migrate revert
 Applied 20211001154420/revert base user tables (20.160145ms)
 ```
 
-#### Test Development
+To create a new _reversible_ migration, run the following:
+
+```sh
+$ sqlx migrate add -r initial_table_setup
+Creating migrations/20220227182018_initial_table_setup.up.sql
+Creating migrations/20220227182018_initial_table_setup.down.sql
+
+Congratulations on creating your first migration!
+```
+
+### Test Development
 
 This application relies on a fake server from wiremock. Wiremock spins up a web server on an arbitrary port on `localhost` and so our application code can issue _real_ HTTP requests to this mock server.
 

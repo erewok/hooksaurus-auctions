@@ -86,7 +86,7 @@ create table address (
     longitude             double precision,
 
     created_at      timestamptz not null default now(),
-    updated_at      timestamptz,
+    updated_at      timestamptz not null,
     etag            uuid not null
 );
 SELECT trigger_updated_at('address');
