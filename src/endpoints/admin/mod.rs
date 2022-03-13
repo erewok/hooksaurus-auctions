@@ -8,9 +8,9 @@ use crate::db::tables::{self, serialize_dt};
 pub use handlers::router;
 
 #[derive(serde::Deserialize)]
-struct Pagination {
-    page: usize,
-    per_page: usize,
+pub struct Pagination {
+    pub page: usize,
+    pub per_page: usize,
 }
 impl Default for Pagination {
     fn default() -> Self {
@@ -19,10 +19,6 @@ impl Default for Pagination {
             per_page: 30,
         }
     }
-}
-
-pub trait AsAdminRow {
-    fn to_admin_row(&self) -> AdminRow;
 }
 
 #[derive(Debug, serde::Serialize)]

@@ -11,6 +11,7 @@ use uuid::Uuid;
 use crate::db::tables::Table;
 use crate::endpoints::admin::{AdminRow, Pagination};
 use crate::endpoints::ApiContext;
+use crate::error::Result;
 
 use super::queries;
 
@@ -67,7 +68,7 @@ async fn list_table_records(
     }
     let Query(pagination) = pagination.unwrap_or_default();
     let next_page: usize = pagination.page + 1;
-    let rows: Vec<AdminRow> = match table_requested {
+    let rows_result: Result<Vec<AdminRow>> = match table_requested {
         None => {
             return (
                 StatusCode::BAD_REQUEST,
@@ -75,14 +76,23 @@ async fn list_table_records(
             )
         }
         Some(Table::Address) => queries::get_address_admin_rows(&pagination, &ctx.db).await,
-        Some(Table::Article) => vec![],
-        Some(Table::Auction) => vec![],
-        Some(Table::AuctionItem) => vec![],
-        Some(Table::AuctionItemBid) => vec![],
-        Some(Table::AuctionItemDelivery) => vec![],
-        Some(Table::Organization) => vec![],
-        Some(Table::User) => vec![],
+        Some(Table::Article) => queries::get_article_admin_rows(&pagination, &ctx.db).await,
+        Some(Table::Auction) => queries::get_auction_admin_rows(&pagination, &ctx.db).await,
+        Some(Table::AuctionItem) => {
+            queries::get_auction_item_admin_rows(&pagination, &ctx.db).await
+        }
+        Some(Table::AuctionItemBid) => {
+            queries::get_auction_item_bid_admin_rows(&pagination, &ctx.db).await
+        }
+        Some(Table::AuctionItemDelivery) => {
+            queries::get_auction_item_delivery_admin_rows(&pagination, &ctx.db).await
+        }
+        Some(Table::Organization) => {
+            queries::get_organization_admin_rows(&pagination, &ctx.db).await
+        }
+        Some(Table::User) => queries::get_user_admin_rows(&pagination, &ctx.db).await,
     };
+    let rows = rows_result.unwrap_or_else(|_| vec![]);
 
     let rendered = template
         .render(context!(
