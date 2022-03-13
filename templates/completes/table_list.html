@@ -1,0 +1,12 @@
+{% extends 'completes/admin_base.html' %}
+{% block content %}
+<h1>All Tables</h1>
+<ul hx-boost="true" class="uk-list uk-list-disc uk-list-primary">
+    {% for (table_url_name, table_name) in table_list %}
+    <li>
+        <h3><a href="/admin/tables/{{ table_url_name }}">{{ table_name | title }}</a>
+            <h3>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

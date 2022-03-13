@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
+    <title>{% block title %}Hooksaurus Auctions Admin{% endblock %}</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/css/uikit.min.css" />
-    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="stylesheet" href="static/css/styles.css" />
     <!-- UIkit JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/js/uikit-icons.min.js"></script>
@@ -22,10 +22,7 @@
         <h1>Auctions Admin</h1>
     </div>
     <div class="uk-container uk-container-large">
-        <!-- ADMIN LIST TABLES DEMO -->
-        <div id="main" hx-get="/admin/tables" hx-trigger="load">
-            <img alt="Getting tables list..." class="htmx-indicator" width="150" src="static/imgs/bars.svg" />
-        </div>
+        {% block content %}{% endblock %}
     </div>
 
 </body>

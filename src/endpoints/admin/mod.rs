@@ -7,7 +7,7 @@ mod queries;
 use crate::db::tables::{self, serialize_dt};
 pub use handlers::router;
 
-#[derive(serde::Deserialize)]
+#[derive(Clone, Debug, serde::Deserialize)]
 pub struct Pagination {
     pub page: usize,
     pub per_page: usize,

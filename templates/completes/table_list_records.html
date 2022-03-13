@@ -1,22 +1,59 @@
-<h1>{{ table_name }} Records </h1>
-<table class="uk-table uk-table-justify uk-table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Created</th>
-            <th>Modified</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in records %}
-        <tr>
-            <td><a href="/admin/tables/{{ table_name }}/{{ row.pk }}">{{ row.name }}</a></td>
-            <td>{{ row.created }}</td>
-            <td>{{ row.modified }}</td>
-        </tr>
-        {% endfor %} {% if next_page %}
-        <a href="/admin/tables/{{ table_name }}?pg={{ next_page }}" class="uk-button uk-button-primary">Next page</button>
-        {% endif %}
-    </tbody>
+<!DOCTYPE html>
+<html lang="en">
 
-</table>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Hooksaurus Auctions Admin{% endblock %}</title>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/css/uikit.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/js/uikit-icons.min.js"></script>
+    <!-- Htmx -->
+    <script src="https://unpkg.com/htmx.org@1.3.3"
+        integrity="sha384-QrlPmoLqMVfnV4lzjmvamY0Sv/Am8ca1W7veO++Sp6PiIGixqkD+0xZ955Nc03qO"
+        crossorigin="anonymous"></script>
+</head>
+
+<body uk-height-viewport>
+    <div class="uk-height-medium uk-flex uk-flex-center uk-flex-bottom uk-background-cover uk-light"
+        data-src="static/imgs/elephant-hero.png" uk-img>
+        <h1>Auctions Admin</h1>
+    </div>
+    <div class="uk-container uk-container-large">
+        <h1>{{ table_name }} Records </h1>
+        <button id="insertButton" hx-get="/admin/tables/{{ table_url_name }}/insert" hx-target="#insert-form"
+            class="uk-button uk-button-primary" _="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">Create {{
+            table_name }}</button>
+
+        <div id="insert-form"></div>
+
+        {% if records %}
+        <table class="uk-table uk-table-justify uk-table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in records %}
+                <tr>
+                    <td><a href="/admin/tables/{{ table_name }}/{{ row.pk }}">{{ row.name }}</a></td>
+                    <td>{{ row.created }}</td>
+                    <td>{{ row.modified }}</td>
+                </tr>
+                {% endfor %} {% if next_page %}
+                <a href="/admin/tables/{{ table_name }}?pg={{ next_page }}" class="uk-button uk-button-primary">Next
+                    page</button>
+                    {% endif %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

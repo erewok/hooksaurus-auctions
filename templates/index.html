@@ -6,97 +6,63 @@
     <title>{{ title }}</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/css/uikit.min.css" />
-    <link rel="stylesheet" href="static/css/styles.css" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
     <!-- UIkit JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.21/dist/js/uikit-icons.min.js"></script>
     <!-- Htmx -->
-    <script src="https://unpkg.com/htmx.org@1.3.3" integrity="sha384-QrlPmoLqMVfnV4lzjmvamY0Sv/Am8ca1W7veO++Sp6PiIGixqkD+0xZ955Nc03qO" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.3.3"
+        integrity="sha384-QrlPmoLqMVfnV4lzjmvamY0Sv/Am8ca1W7veO++Sp6PiIGixqkD+0xZ955Nc03qO"
+        crossorigin="anonymous"></script>
 </head>
 
 <body uk-height-viewport>
-    <div class="uk-height-medium uk-flex uk-flex-center uk-flex-bottom uk-background-cover uk-light" data-src="static/imgs/elephant-hero.png" uk-img>
-        <h1>Auctions Admin</h1>
+    <div class="uk-height-medium uk-flex uk-flex-center uk-flex-bottom uk-background-cover uk-light"
+        data-src="static/imgs/elephant-hero.png" uk-img>
+        <h1>Auctions Main</h1>
     </div>
-    <div class="uk-container uk-container-large">
-        <!-- ADMIN LIST TABLES DEMO -->
-        <div hx-get="/admin/tables" hx-trigger="load">
-            <img alt="Getting tables list..." class="htmx-indicator" width="150" src="static/imgs/bars.svg" />
-        </div>
 
-        <!-- ADMIN LIST RECORDS FROM TABLE DEMO -->
-        <div>
-            <h1>{{ RECORD_TYPE }} Records </h1>
-            <table class="uk-table uk-table-justify uk-table-striped">
-                <thead>
-                    <tr>
-                        <th>Table Heading</th>
-                        <th>Table Heading</th>
-                        <th>Table Heading</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Table Data</td>
-                        <td>Table Data</td>
-                        <td>Table Data</td>
-                    </tr>
-                    <tr>
-                        <td>Table Data</td>
-                        <td>Table Data</td>
-                        <td>Table Data</td>
-                    </tr>
-                    <tr>
-                        <td>Table Data</td>
-                        <td>Table Data</td>
-                        <td>Table Data</td>
-                    </tr>
-                </tbody>
 
-            </table>
-        </div>
+    <!-- INSERT Form DEMO -->
+    <div>
+        <h1>Insert {{ RECORD_TYPE }}</h1>
+        <form>
+            <fieldset class="uk-fieldset">
 
-        <!-- ADMIN INSERT ITEM DEMO -->
-        <div>
-            <h1>Insert {{ RECORD_TYPE }}</h1>
-            <form>
-                <fieldset class="uk-fieldset">
+                <legend class="uk-legend">Legend</legend>
 
-                    <legend class="uk-legend">Legend</legend>
+                <div class="uk-margin">
+                    <input class="uk-input" type="text" placeholder="Input">
+                </div>
 
-                    <div class="uk-margin">
-                        <input class="uk-input" type="text" placeholder="Input">
-                    </div>
+                <div class="uk-margin">
+                    <select class="uk-select">
+                        <option>Option 01</option>
+                        <option>Option 02</option>
+                    </select>
+                </div>
 
-                    <div class="uk-margin">
-                        <select class="uk-select">
-                            <option>Option 01</option>
-                            <option>Option 02</option>
-                        </select>
-                    </div>
+                <div class="uk-margin">
+                    <textarea class="uk-textarea" rows="5" placeholder="Textarea"></textarea>
+                </div>
 
-                    <div class="uk-margin">
-                        <textarea class="uk-textarea" rows="5" placeholder="Textarea"></textarea>
-                    </div>
+                <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                    <label><input class="uk-radio" type="radio" name="radio2" checked> A</label>
+                    <label><input class="uk-radio" type="radio" name="radio2"> B</label>
+                </div>
 
-                    <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-                        <label><input class="uk-radio" type="radio" name="radio2" checked> A</label>
-                        <label><input class="uk-radio" type="radio" name="radio2"> B</label>
-                    </div>
+                <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                    <label><input class="uk-checkbox" type="checkbox" checked> A</label>
+                    <label><input class="uk-checkbox" type="checkbox"> B</label>
+                </div>
 
-                    <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-                        <label><input class="uk-checkbox" type="checkbox" checked> A</label>
-                        <label><input class="uk-checkbox" type="checkbox"> B</label>
-                    </div>
+                <div class="uk-margin">
+                    <input class="uk-range" type="range" value="2" min="0" max="10" step="0.1">
+                </div>
 
-                    <div class="uk-margin">
-                        <input class="uk-range" type="range" value="2" min="0" max="10" step="0.1">
-                    </div>
-
-                </fieldset>
-                <button class="uk-button uk-button-primary">Save</button>
-            </form>
-        </div>
+            </fieldset>
+            <button class="uk-button uk-button-primary">Save</button>
+        </form>
     </div>
 
 </body>

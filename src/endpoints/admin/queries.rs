@@ -1,10 +1,11 @@
 use sqlx::PgPool;
+use tracing::instrument;
 
-use crate::db::tables;
 use crate::{error::Result, Error};
 
 use super::{AdminRow, Pagination};
 
+#[instrument(skip(db))]
 pub async fn get_address_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
     sqlx::query_as!(
         AdminRow,
@@ -30,7 +31,7 @@ pub async fn get_address_admin_rows(pagination: &Pagination, db: &PgPool) -> Res
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_article_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
     sqlx::query_as!(
         AdminRow,
@@ -51,7 +52,7 @@ pub async fn get_article_admin_rows(pagination: &Pagination, db: &PgPool) -> Res
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_auction_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
     sqlx::query_as!(
         AdminRow,
@@ -72,7 +73,7 @@ pub async fn get_auction_admin_rows(pagination: &Pagination, db: &PgPool) -> Res
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_auction_item_admin_rows(
     pagination: &Pagination,
     db: &PgPool,
@@ -96,7 +97,7 @@ pub async fn get_auction_item_admin_rows(
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_auction_item_bid_admin_rows(
     pagination: &Pagination,
     db: &PgPool,
@@ -122,7 +123,7 @@ pub async fn get_auction_item_bid_admin_rows(
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_auction_item_delivery_admin_rows(
     pagination: &Pagination,
     db: &PgPool,
@@ -148,7 +149,7 @@ pub async fn get_auction_item_delivery_admin_rows(
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_organization_admin_rows(
     pagination: &Pagination,
     db: &PgPool,
@@ -172,7 +173,7 @@ pub async fn get_organization_admin_rows(
     .await
     .map_err(Error::Sqlx)
 }
-
+#[instrument(skip(db))]
 pub async fn get_user_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
     sqlx::query_as!(
         AdminRow,

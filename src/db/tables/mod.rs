@@ -25,7 +25,7 @@ pub enum Table {
     User,
 }
 impl Table {
-    pub fn get_table_list() -> Vec<String> {
+    pub fn get_table_list() -> Vec<Table> {
         vec![
             Table::Address,
             Table::Article,
@@ -36,9 +36,18 @@ impl Table {
             Table::Organization,
             Table::User,
         ]
-        .iter()
-        .map(|t| t.to_string())
-        .collect()
+    }
+    pub fn to_url_name(&self) -> &str {
+        match self {
+            Table::Address => "address",
+            Table::Article => "article",
+            Table::Auction => "auction",
+            Table::AuctionItem => "auction-item",
+            Table::AuctionItemBid => "auction-item-bid",
+            Table::AuctionItemDelivery => "auction-item-delivery",
+            Table::Organization => "organization",
+            Table::User => "user",
+        }
     }
 
     pub fn to_postgres_name(&self) -> &str {

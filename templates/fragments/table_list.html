@@ -1,8 +1,9 @@
-<ul hx-boost="true" class="uk-list uk-list-disc uk-list-primary">
-    {% for table in table_list %}
-    <li>
-        <h3><a href="/admin/tables/{{ table }}">{{ table|title }}</a>
-            <h3>
-    </li>
+<ul hx-swap="outerHTML" hx-target="#main" class="uk-list uk-list-disc uk-list-primary">
+    {% for (table_url_name, table_name) in table_list %}
+    <a hx-get="/admin/tables/{{ table_url_name }}" hx-push-url="true">
+        <li>
+            <h3>{{ table_name | title }}<h3></h3>
+        </li>
+    </a>
     {% endfor %}
 </ul>

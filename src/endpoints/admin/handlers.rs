@@ -6,6 +6,7 @@ use axum::{
     Router,
 };
 use minijinja::context;
+use tracing::{event, instrument, Level};
 use uuid::Uuid;
 
 use crate::db::tables::Table;
@@ -19,15 +20,20 @@ pub fn router() -> Router {
     Router::new()
         .route("/admin", get(admin_root))
         .route("/admin/tables", get(list_tables))
-        .route("/admin/tables/:table", get(list_table_records))
+        .route("/admin/tables/address", get(list_address))
         .route(
-            "/admin/tables/:table/:pk",
-            get(get_table_record)
-                .post(save_table_record)
-                .delete(delete_table_record),
+            "/admin/tables/address/insert",
+            get(get_address_insert_form).post(insert_address),
+        )
+        .route(
+            "/admin/tables/address/:pk",
+            get(get_address_record)
+                .put(update_address_record)
+                .delete(delete_address_record),
         )
 }
 
+#[instrument(skip(ctx))]
 async fn admin_root(ctx: Extension<ApiContext>) -> Html<String> {
     let template = ctx.template_env.get_template("admin.html").unwrap();
     Html(
@@ -37,25 +43,56 @@ async fn admin_root(ctx: Extension<ApiContext>) -> Html<String> {
     )
 }
 
-async fn list_tables(ctx: Extension<ApiContext>) -> Html<String> {
-    let template = ctx
-        .template_env
-        .get_template("fragments/table_list.html")
-        .unwrap();
+#[instrument(skip(ctx))]
+async fn list_tables(headers: HeaderMap, ctx: Extension<ApiContext>) -> Html<String> {
+    let template;
+    if headers.get("hx-request").is_some() {
+        template = ctx
+            .template_env
+            .get_template("fragments/table_list.html")
+            .unwrap();
+    } else {
+        template = ctx
+            .template_env
+            .get_template("completes/table_list.html")
+            .unwrap();
+    }
+    let table_list: Vec<(String, String)> = Table::get_table_list()
+        .iter()
+        .map(|t| (t.to_url_name().to_string(), t.to_string()))
+        .collect();
+    let ctx = context! { table_list };
     let rendered = template
-        .render(context!(table_list => Table::get_table_list()))
+        .render(ctx)
+        .map_err(|e| {
+            eprintln!("{:?}", e);
+            e
+        })
         .unwrap();
     Html(rendered)
 }
 
-async fn list_table_records(
-    pagination: Option<Query<Pagination>>,
+async fn list_address(
     headers: HeaderMap,
     ctx: Extension<ApiContext>,
-    Path(table_requested): Path<Option<Table>>,
+    pagination: Option<Query<Pagination>>,
+) -> (StatusCode, Html<String>) {
+    let Query(pagination) = pagination.unwrap_or_default();
+    list_table_records(Table::Address, pagination, headers, ctx).await
+}
+
+async fn list_table_records(
+    table: Table,
+    pagination: Pagination,
+    headers: HeaderMap,
+    ctx: Extension<ApiContext>,
 ) -> (StatusCode, Html<String>) {
     let template;
     if headers.get("hx-request").is_some() {
+        event!(
+            Level::INFO,
+            event_msg = "Table list records called as fragment"
+        );
         template = ctx
             .template_env
             .get_template("fragments/table_list_records.html")
@@ -66,37 +103,27 @@ async fn list_table_records(
             .get_template("completes/table_list_records.html")
             .unwrap();
     }
-    let Query(pagination) = pagination.unwrap_or_default();
     let next_page: usize = pagination.page + 1;
-    let rows_result: Result<Vec<AdminRow>> = match table_requested {
-        None => {
-            return (
-                StatusCode::BAD_REQUEST,
-                Html("Invalid table name".to_string()),
-            )
-        }
-        Some(Table::Address) => queries::get_address_admin_rows(&pagination, &ctx.db).await,
-        Some(Table::Article) => queries::get_article_admin_rows(&pagination, &ctx.db).await,
-        Some(Table::Auction) => queries::get_auction_admin_rows(&pagination, &ctx.db).await,
-        Some(Table::AuctionItem) => {
-            queries::get_auction_item_admin_rows(&pagination, &ctx.db).await
-        }
-        Some(Table::AuctionItemBid) => {
+    let rows_result: Result<Vec<AdminRow>> = match table {
+        Table::Address => queries::get_address_admin_rows(&pagination, &ctx.db).await,
+        Table::Article => queries::get_article_admin_rows(&pagination, &ctx.db).await,
+        Table::Auction => queries::get_auction_admin_rows(&pagination, &ctx.db).await,
+        Table::AuctionItem => queries::get_auction_item_admin_rows(&pagination, &ctx.db).await,
+        Table::AuctionItemBid => {
             queries::get_auction_item_bid_admin_rows(&pagination, &ctx.db).await
         }
-        Some(Table::AuctionItemDelivery) => {
+        Table::AuctionItemDelivery => {
             queries::get_auction_item_delivery_admin_rows(&pagination, &ctx.db).await
         }
-        Some(Table::Organization) => {
-            queries::get_organization_admin_rows(&pagination, &ctx.db).await
-        }
-        Some(Table::User) => queries::get_user_admin_rows(&pagination, &ctx.db).await,
+        Table::Organization => queries::get_organization_admin_rows(&pagination, &ctx.db).await,
+        Table::User => queries::get_user_admin_rows(&pagination, &ctx.db).await,
     };
     let rows = rows_result.unwrap_or_else(|_| vec![]);
 
     let rendered = template
         .render(context!(
-            table_name => table_requested.unwrap_or_default().to_string(),
+            table_url_name => table.to_url_name(),
+            table_name => table.to_string(),
             records => rows,
             next_page => next_page
         ))
@@ -104,14 +131,36 @@ async fn list_table_records(
     (StatusCode::OK, Html(rendered))
 }
 
-async fn get_table_record(Path(table): Path<String>, Path(pk): Path<Uuid>) -> Html<String> {
+#[instrument(skip(ctx))]
+async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>) -> Html<String> {
+    let template;
+    if headers.get("hx-request").is_some() {
+        template = ctx
+            .template_env
+            .get_template("fragments/address_insert_modal.html")
+            .unwrap();
+    } else {
+        template = ctx
+            .template_env
+            .get_template("completes/address_insert_modal.html")
+            .unwrap();
+    }
+    let rendered = template.render(context!(false)).unwrap();
+    Html(rendered)
+}
+
+async fn insert_address() -> Html<String> {
     todo!()
 }
 
-async fn save_table_record(Path(table): Path<String>, Path(pk): Path<Uuid>) -> Html<String> {
+async fn get_address_record(Path(pk): Path<Uuid>) -> Html<String> {
     todo!()
 }
 
-async fn delete_table_record(Path(table): Path<String>, Path(pk): Path<Uuid>) -> Html<String> {
+async fn update_address_record(Path(pk): Path<Uuid>) -> Html<String> {
+    todo!()
+}
+
+async fn delete_address_record(Path(pk): Path<Uuid>) -> Html<String> {
     todo!()
 }
