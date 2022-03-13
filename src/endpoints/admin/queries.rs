@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use tracing::instrument;
 
-use crate::{error::Result, Error};
+use crate::{db::tables, error::Result, Error};
 
 use super::{AdminRow, Pagination};
 
@@ -191,6 +191,42 @@ pub async fn get_user_admin_rows(pagination: &Pagination, db: &PgPool) -> Result
         i64::try_from(pagination.page * pagination.per_page).unwrap_or(0)
     )
     .fetch_all(db)
+    .await
+    .map_err(Error::Sqlx)
+}
+
+#[instrument(skip(db))]
+pub async fn insert_address_from_form(
+    address: tables::address::AddressFromForm,
+    db: &PgPool,
+) -> Result<tables::address::Address> {
+    sqlx::query_as!(
+        tables::address::Address,
+        r#"
+        insert into address (
+                street_address1, street_address2, street_address3, 
+                city, state_province_county, postal_code,
+                country_code, latitude, longitude
+            )
+            values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            returning 
+                address_id as "address_id: tables::address::AddressId",
+                street_address1, street_address2, street_address3, 
+                city, state_province_county, postal_code,
+                country_code, latitude, longitude, created_at, updated_at, 
+                etag "etag: tables::Etag"
+        "#,
+        address.street_address1,
+        address.street_address2,
+        address.street_address3,
+        address.city,
+        address.state_province_county,
+        address.postal_code,
+        address.country_code,
+        address.latitude.map(|n| n.parse::<f64>().ok()).flatten(),
+        address.longitude.map(|n| n.parse::<f64>().ok()).flatten()
+    )
+    .fetch_one(db)
     .await
     .map_err(Error::Sqlx)
 }

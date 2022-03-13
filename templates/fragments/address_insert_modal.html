@@ -33,8 +33,8 @@
                 <input class="uk-input" type="number" name="longitude" placeholder="longitude">
             </div>
 
-            <button id="submit-button" hx-post="/admin/tables/address/insert" type="button"
-                _="on click take .uk-open from #modal wait 200ms then remove #modal"
+            <button hx-swap="outerHTML" hx-target="#main" id="submit-button" hx-post="/admin/tables/address/insert"
+                type="button" _="on click take .uk-open from #modal wait 200ms then remove #modal"
                 class="uk-button uk-button-primary">Save
                 Changes</button>
             <button id="cancel-button" type="button" class="uk-button uk-button-default"
@@ -42,21 +42,3 @@
         </form>
     </div>
 </div>
-
-<script>
-    // This triggers the fade-out animation when the modal is closed.
-    window.document.getElementById("cancel-button").addEventListener("click", function () {
-        window.document.getElementById("modal").classList.remove("uk-open")
-        setTimeout(function () {
-            window.document.getElementById("insert-form").innerHTML = ""
-                , 200
-        })
-    })
-    window.document.getElementById("submit-button").addEventListener("click", function () {
-        window.document.getElementById("modal").classList.remove("uk-open")
-        setTimeout(function () {
-            window.document.getElementById("insert-form").innerHTML = ""
-                , 200
-        })
-    })
-</script>

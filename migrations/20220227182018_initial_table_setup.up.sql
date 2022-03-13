@@ -86,8 +86,8 @@ create table address (
     longitude             double precision,
 
     created_at      timestamptz not null default now(),
-    updated_at      timestamptz not null,
-    etag            uuid not null
+    updated_at      timestamptz not null default now(),
+    etag            uuid not null default uuid_generate_v1mc()
 );
 SELECT trigger_updated_at('address');
 select trigger_etag('address');
@@ -113,7 +113,7 @@ create table organization
     -- defaults
     created_at    timestamptz not null default now(),
     updated_at    timestamptz not null default now(),
-    etag          uuid not null
+    etag            uuid not null default uuid_generate_v1mc()
 );
 SELECT trigger_updated_at('organization');
 select trigger_etag('organization');
@@ -146,7 +146,7 @@ create table "user"
     -- defaults
     created_at    timestamptz not null default now(),
     updated_at    timestamptz not null default now(),
-    etag          uuid not null
+    etag            uuid not null default uuid_generate_v1mc()
 );
 
 SELECT trigger_updated_at('"user"');

@@ -151,10 +151,23 @@ async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>)
 
 async fn insert_address(
     form: Form<tables::address::AddressFromForm>,
+    headers: HeaderMap,
+    ctx: Extension<ApiContext>,
 ) -> (StatusCode, Html<String>) {
     let address: tables::address::AddressFromForm = form.0;
-    event!(Level::INFO, event_msg = "Insert address called", address=?address);
-    (StatusCode::ACCEPTED, Html("".to_string()))
+    // insert new address
+    event!(Level::INFO, event_msg = "Inserting new address", address=?address);
+    match queries::insert_address_from_form(address, &ctx.db).await {
+        Ok(_) => list_table_records(Table::Address, Pagination::default(), headers, ctx).await,
+        Err(e) => {
+            event!(Level::ERROR, event_msg="Error inserting Address record", err=?e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Html("An error occurred".to_string()),
+            )
+        }
+    }
+    // send back listings again
 }
 
 async fn get_address_record(Path(pk): Path<Uuid>) -> Html<String> {
