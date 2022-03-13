@@ -13,7 +13,7 @@ license = "MPL-2.0"
 anyhow = "1.0.48"
 argon2 = "0.3.1"
 async-trait = "0.1.51"
-axum = { version = "0.4.6", features = ["headers", "json", "tower-log"] }
+axum = { version = "0.4.8", features = ["headers", "default", "json", "tower-log"] }
 clap = { version = "3.1.0", features = ["derive", "env"] }
 env_logger = "0.9.0"
 futures = "0.3"

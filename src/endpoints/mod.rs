@@ -1,6 +1,6 @@
 use crate::config::Config;
 use anyhow::Context;
-use axum::{http::Method, AddExtensionLayer, Router};
+use axum::{extract::Extension, http::Method, Router};
 use minijinja::{Environment, Source};
 use sqlx::PgPool;
 use std::sync::Arc;
@@ -20,7 +20,7 @@ use tower_http::trace::TraceLayer;
 pub struct ApiContext {
     config: Arc<Config>,
     db: PgPool,
-    template_env: Environment<'static>
+    template_env: Environment<'static>,
 }
 
 pub async fn serve(config: Config, db: PgPool) -> anyhow::Result<()> {
@@ -31,10 +31,10 @@ pub async fn serve(config: Config, db: PgPool) -> anyhow::Result<()> {
 
     let app = api_router().layer(
         ServiceBuilder::new()
-            .layer(AddExtensionLayer::new(ApiContext {
+            .layer(Extension(ApiContext {
                 config: Arc::new(config),
                 db,
-                template_env: env
+                template_env: env,
             }))
             .layer(TraceLayer::new_for_http())
             .layer(

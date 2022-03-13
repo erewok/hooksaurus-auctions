@@ -1,7 +1,7 @@
-<div id="modal" class="uk-modal" style="display:block;">
+<div id="modal" class="uk-modal uk-open" style="display:block;">
     <div class="uk-modal-dialog uk-modal-body">
         <h2 class="uk-modal-title">Insert Address</h2>
-        <p>Insert new Address below</p>
+        <p>Create new Address</p>
 
         <form _="on submit take .uk-open from #modal">
             <div class="uk-margin">
@@ -33,11 +33,11 @@
                 <input class="uk-input" type="number" name="longitude" placeholder="longitude">
             </div>
 
-            <button hx-post="/admin/tables/address/insert" type="button"
+            <button hx-post="/admin/tables/address/insert" type="button" hx-trigger="click"
                 _="on click take .uk-open from #modal wait 200ms then remove #modal"
                 class="uk-button uk-button-primary">Save
                 Changes</button>
-            <button id="cancelButton" type="button" class="uk-button uk-button-default"
+            <button id="cancelButton" type="button" class="uk-button uk-button-default" hx-trigger="click"
                 _="on click take .uk-open from #modal wait 200ms then remove #modal">Cancel</button>
         </form>
     </div>

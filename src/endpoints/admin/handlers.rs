@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Extension, Path, Query},
+    extract::{Extension, Form, Path, Query},
     http::{header::HeaderMap, StatusCode},
     response::Html,
     routing::get,
@@ -9,7 +9,7 @@ use minijinja::context;
 use tracing::{event, instrument, Level};
 use uuid::Uuid;
 
-use crate::db::tables::Table;
+use crate::db::tables::{self, Table};
 use crate::endpoints::admin::{AdminRow, Pagination};
 use crate::endpoints::ApiContext;
 use crate::error::Result;
@@ -49,12 +49,12 @@ async fn list_tables(headers: HeaderMap, ctx: Extension<ApiContext>) -> Html<Str
     if headers.get("hx-request").is_some() {
         template = ctx
             .template_env
-            .get_template("fragments/table_list.html")
+            .get_template("fragments/list_all_tables.html")
             .unwrap();
     } else {
         template = ctx
             .template_env
-            .get_template("completes/table_list.html")
+            .get_template("completes/list_all_tables.html")
             .unwrap();
     }
     let table_list: Vec<(String, String)> = Table::get_table_list()
@@ -149,8 +149,10 @@ async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>)
     Html(rendered)
 }
 
-async fn insert_address() -> Html<String> {
-    todo!()
+async fn insert_address(form: Form<tables::address::Address>) -> (StatusCode, Html<String>) {
+    let address: tables::address::Address = form.0;
+    event!(Level::INFO, event_msg = "Insert address called", address=?address);
+    (StatusCode::ACCEPTED, Html("".to_string()))
 }
 
 async fn get_address_record(Path(pk): Path<Uuid>) -> Html<String> {

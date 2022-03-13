@@ -9,3 +9,12 @@ body {
 img {
     transition: opacity 300ms ease-in;
 }
+
+ul {
+    list-style-type: none;
+}
+
+ul > a {
+    text-decoration: none;
+    color: #2AA198;
+}
