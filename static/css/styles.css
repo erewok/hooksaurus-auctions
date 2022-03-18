@@ -10,11 +10,11 @@ img {
     transition: opacity 300ms ease-in;
 }
 
-ul li {
+ul {
     list-style-type: none;
 }
 
-ul a {
+a {
     text-decoration: none;
     color: #2AA198;
 }

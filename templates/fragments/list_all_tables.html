@@ -1,6 +1,6 @@
 <ul hx-swap="outerHTML" hx-target="#main" class="uk-list uk-list-disc uk-list-primary">
     {% for (table_url_name, table_name) in table_list %}
-    <a hx-get="/admin/tables/{{ table_url_name }}" hx-push-url="true">
+    <a uk-icon="more-vertical" hx-get="/admin/tables/{{ table_url_name }}" hx-push-url="true">
         <li>
             <h3>{{ table_name | title }}<h3></h3>
         </li>

@@ -33,8 +33,8 @@
                 <td><a hx-get="/admin/tables/{{ table_url_name }}/{{ row.pk }}" hx-push-url="true">{{ row.name|title
                         }}</a>
                 </td>
-                <td>{{ row.created }}</td>
-                <td>{{ row.modified }}</td>
+                <td>{{ row.created_at }}</td>
+                <td>{{ row.updated_at }}</td>
             </tr>
             {% endfor %} {% if next_page %}
             <a hx-get="/admin/tables/{{ table_url_name }}?pg={{ next_page }}" hx-push-url="true"
