@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::{db::tables, error::Result, Error};
 
-use super::{AdminRow, Pagination};
+use super::{AdminRow, Pagination, ToForm};
 
 #[instrument(skip(db))]
 pub async fn get_address_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
@@ -54,36 +54,6 @@ pub async fn get_article_admin_rows(pagination: &Pagination, db: &PgPool) -> Res
     .await
     .map_err(Error::Sqlx)
 }
-
-#[instrument(skip(db))]
-pub async fn get_address_detail(pk: Uuid, db: &PgPool) -> Result<Option<tables::address::Address>> {
-    sqlx::query_as!(
-        tables::address::Address,
-        r#"
-            select
-                address_id "address_id: tables::address::AddressId",
-                street_address1,
-                street_address2,
-                street_address3,
-                city,
-                state_province_county,
-                postal_code,
-                country_code,
-                latitude,
-                longitude,
-                created_at,
-                updated_at,
-                etag "etag: tables::Etag"
-            from address
-            where address_id = $1
-        "#,
-        pk
-    )
-    .fetch_optional(db)
-    .await
-    .map_err(Error::Sqlx)
-}
-
 
 #[instrument(skip(db))]
 pub async fn get_auction_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
@@ -260,6 +230,53 @@ pub async fn insert_address_from_form(
         address.longitude.map(|n| n.parse::<f64>().ok()).flatten()
     )
     .fetch_one(db)
+    .await
+    .map_err(Error::Sqlx)
+}
+
+#[instrument(skip(table, db))]
+pub async fn get_table_detail(
+    table: &tables::Table,
+    pk: Uuid,
+    db: &PgPool,
+) -> Result<Option<impl ToForm>> {
+    match table {
+        tables::Table::Address => get_address_detail(pk, &db).await,
+        tables::Table::Article => todo!(),
+        tables::Table::Auction => todo!(),
+        tables::Table::AuctionItem => todo!(),
+        tables::Table::AuctionItemBid => todo!(),
+        tables::Table::AuctionItemDelivery => todo!(),
+        tables::Table::Organization => todo!(),
+        tables::Table::User => todo!(),
+    }
+}
+
+#[instrument(skip(db))]
+pub async fn get_address_detail(pk: Uuid, db: &PgPool) -> Result<Option<tables::address::Address>> {
+    sqlx::query_as!(
+        tables::address::Address,
+        r#"
+            select
+                address_id "address_id: tables::address::AddressId",
+                street_address1,
+                street_address2,
+                street_address3,
+                city,
+                state_province_county,
+                postal_code,
+                country_code,
+                latitude,
+                longitude,
+                created_at,
+                updated_at,
+                etag "etag: tables::Etag"
+            from address
+            where address_id = $1
+        "#,
+        pk
+    )
+    .fetch_optional(db)
     .await
     .map_err(Error::Sqlx)
 }

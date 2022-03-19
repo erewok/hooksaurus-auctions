@@ -1,6 +1,6 @@
 <div id="modal" class="uk-modal uk-open" style="display:block;">
     <div class="uk-modal-dialog uk-modal-body">
-        <h2 class="uk-modal-title">Insert {{ table_name }}</h2>
+        <h2 class="uk-modal-title">{{ action|default("Insert")}} {{ table_name }}</h2>
         <p>Create new {{ table_name }}</p>
 
         <form _="on submit take .uk-open from #modal">

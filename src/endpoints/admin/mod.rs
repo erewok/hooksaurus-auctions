@@ -87,32 +87,81 @@ impl ToForm for tables::address::Address {
     fn to_empty_form() -> String {
         r##"
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="street_address1" placeholder="Street address Line 1" required>
+                <input class="uk-input" type="text" name="title" placeholder="Auction Title" required>
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="street_address2" placeholder="Street address Line 2">
+                <textarea class="uk-textarea" rows="5" placeholder="description" name="description"></textarea>
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="street_address3" placeholder="Street address Line 3">
+                <input data-uk-datepicker="{format:'DD.MM.YYYY'}" name="start_date_date" required>
+                <input data-uk-timepicker="{format:'12h'}" name="start_date_time" required>
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="city" placeholder="City" required>
+                <input data-uk-datepicker="{format:'DD.MM.YYYY'}" name="end_date_date" required>
+                <input data-uk-timepicker="{format:'12h'}" name="end_date_time" required>
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="state_province_county"
-                    placeholder="State, Province, or County" required>
+                <input class="uk-input" type="text" name="benefits_organization_id"
+                    placeholder="Shore Sanctuary" required>
+            </div>
+        "##.to_string()
+    }
+}
+
+impl ToForm for tables::auction::Auction {
+    fn to_form(&self) -> String {
+        format!(
+            r##"
+            <div class="uk-margin">
+                <input class="uk-input" type="text" name="title" placeholder="Auction Title" required value="{}">
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="postal_code" placeholder="Postal Code">
+                <textarea class="uk-textarea" rows="5" placeholder="description" name="description" value="{}"></textarea>
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="text" name="country_code" placeholder="Country">
+                <input data-uk-datepicker="{{format:'YYYY-MM-DD'}}" name="start_date_date" required value="{}">
+                <input data-uk-timepicker="{{format:'12h'}}" name="start_date_time" required value="{}">
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="number" name="latitude" placeholder="Latitude">
+                <input data-uk-datepicker="{{format:'DD.MM.YYYY'}}" name="end_date_date" required value="{}">
+                <input data-uk-timepicker="{{format:'12h'}}" name="end_date_time" required value="{}">
             </div>
             <div class="uk-margin">
-                <input class="uk-input" type="number" name="longitude" placeholder="longitude">
+                <input class="uk-input" type="text" name="benefits_organization_id"
+                    placeholder="Shore Sanctuary" required value="{}">
+            </div>
+        "##,
+            self.title,
+            self.description,
+            self.start_date.date().format("%Y-%m-%d"),
+            self.start_date.time().format("%H:%M:%S"),
+            self.end_date.date().format("%Y-%m-%d"),
+            self.end_date.time().format("%H:%M:%S"),
+            self.benefits_organization_id
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_default(),
+        )
+    }
+    fn to_empty_form() -> String {
+        r##"
+            <div class="uk-margin">
+                <input class="uk-input" type="text" name="title" placeholder="Auction Title" required>
+            </div>
+            <div class="uk-margin">
+                <textarea class="uk-textarea" rows="5" placeholder="description" name="description"></textarea>
+            </div>
+            <div class="uk-margin">
+                <input data-uk-datepicker="{{format:'YYYY-MM-DD'}}" name="start_date_date" required>
+                <input data-uk-timepicker="{{format:'12h'}}" name="start_date_time" required>
+            </div>
+            <div class="uk-margin">
+                <input data-uk-datepicker="{{format:'DD.MM.YYYY'}}" name="end_date_date" required>
+                <input data-uk-timepicker="{{format:'12h'}}" name="end_date_time" required>
+            </div>
+            <div class="uk-margin">
+                <input class="uk-input" type="text" name="benefits_organization_id"
+                    placeholder="Shore Sanctuary" required>
             </div>
         "##.to_string()
     }

@@ -23,16 +23,16 @@ pub fn router() -> Router {
         .route("/admin/tables", get(list_tables))
         // address
         .route(
-            "/admin/tables/:table_name/:pk",
+            "/admin/tables/:table/:pk",
             get(get_table_record)
                 .put(update_table_record)
                 .delete(delete_table_record),
         )
         .route(
-            "/admin/tables/:table_name/insert",
+            "/admin/tables/:table/insert",
             get(get_insert_form).post(insert_table_record),
         )
-        .route("/admin/tables/:table_name", get(list_table_records))
+        .route("/admin/tables/:table", get(list_table_records))
 }
 
 #[instrument(skip(ctx))]
@@ -143,11 +143,22 @@ async fn get_insert_form(
             .get_template("completes/form_insert_modal.html")
             .unwrap();
     }
+    let form = match table {
+        Table::Address => tables::address::Address::to_empty_form(),
+        Table::Article => todo!(),
+        Table::Auction => tables::auction::Auction::to_empty_form(),
+        Table::AuctionItem => todo!(),
+        Table::AuctionItemBid => todo!(),
+        Table::AuctionItemDelivery => todo!(),
+        Table::Organization => todo!(),
+        Table::User => todo!(),
+    };
+
     let rendered = template
         .render(context!(
-            table_name => "Address",
-            form => tables::address::Address::to_empty_form(),
-            insert_record_url => "/admin/tables/address/insert"
+            table_name => table.to_string(),
+            form => form,
+            insert_record_url => format!("/admin/tables/{}/insert", table.to_url_name()),
         ))
         .unwrap();
     Html(rendered)
@@ -155,7 +166,7 @@ async fn get_insert_form(
 
 #[derive(Deserialize)]
 struct TableDetailParams {
-    table_name: tables::Table,
+    table: tables::Table,
     pk: Uuid,
 }
 
@@ -185,7 +196,7 @@ async fn insert_table_record(
 async fn get_table_record(
     headers: HeaderMap,
     ctx: Extension<ApiContext>,
-    Path(TableDetailParams { table_name, pk }): Path<TableDetailParams>,
+    Path(TableDetailParams { table, pk }): Path<TableDetailParams>,
 ) -> (StatusCode, Html<String>) {
     let template;
     if headers.get("hx-request").is_some() {
@@ -199,7 +210,7 @@ async fn get_table_record(
             .get_template("completes/form_insert_modal.html")
             .unwrap();
     }
-    match queries::get_address_detail(pk, &ctx.db).await {
+    match queries::get_table_detail(&table, pk, &ctx.db).await {
         Err(e) => {
             event!(Level::ERROR, event_msg="Error retrieving Address record", err=?e);
             (
@@ -208,14 +219,15 @@ async fn get_table_record(
             )
         }
         Ok(None) => (StatusCode::NOT_FOUND, Html("".to_string())),
-        Ok(Some(address)) => (
+        Ok(Some(form_thing)) => (
             StatusCode::OK,
             Html(
                 template
                     .render(context!(
-                        table_name => "Address",
-                        form => address.to_form(),
-                        record_save_url => format!("/admin/tables/address/{}", address.address_id.to_string()),
+                        action => "Update",
+                        table_name => table.to_string(),
+                        form => form_thing.to_form(),
+                        record_save_url => format!("/admin/tables/{}/{}", table, pk),
                     ))
                     .unwrap(),
             ),
@@ -224,7 +236,7 @@ async fn get_table_record(
 }
 
 async fn update_table_record(
-    Path(TableDetailParams { table_name, pk }): Path<TableDetailParams>,
+    Path(TableDetailParams { table, pk }): Path<TableDetailParams>,
     headers: HeaderMap,
     ctx: Extension<ApiContext>,
 ) -> Html<String> {
@@ -232,7 +244,7 @@ async fn update_table_record(
 }
 
 async fn delete_table_record(
-    Path(TableDetailParams { table_name, pk }): Path<TableDetailParams>,
+    Path(TableDetailParams { table, pk }): Path<TableDetailParams>,
     headers: HeaderMap,
     ctx: Extension<ApiContext>,
 ) -> Html<String> {
