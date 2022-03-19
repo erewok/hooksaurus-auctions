@@ -5,6 +5,12 @@ use uuid::Uuid;
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
 pub struct AddressId(pub Uuid);
 
+impl std::fmt::Display for AddressId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Address {
     pub address_id: AddressId,

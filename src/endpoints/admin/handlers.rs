@@ -10,7 +10,7 @@ use tracing::{event, instrument, Level};
 use uuid::Uuid;
 
 use crate::db::tables::{self, Table};
-use crate::endpoints::admin::{AdminRow, Pagination};
+use crate::endpoints::admin::{AdminRow, Pagination, ToForm};
 use crate::endpoints::ApiContext;
 use crate::error::Result;
 
@@ -88,15 +88,21 @@ async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>)
     if headers.get("hx-request").is_some() {
         template = ctx
             .template_env
-            .get_template("fragments/address_insert_modal.html")
+            .get_template("fragments/form_insert_modal.html")
             .unwrap();
     } else {
         template = ctx
             .template_env
-            .get_template("completes/address_insert_modal.html")
+            .get_template("completes/form_insert_modal.html")
             .unwrap();
     }
-    let rendered = template.render(context!(false)).unwrap();
+    let rendered = template
+        .render(context!(
+            table_name => "Address",
+            form => tables::address::Address::to_empty_form(),
+            insert_record_url => "/admin/tables/address/insert"
+        ))
+        .unwrap();
     Html(rendered)
 }
 
@@ -124,25 +130,22 @@ async fn insert_address(
 async fn get_address_record(
     Path(pk): Path<String>,
     headers: HeaderMap,
-    ctx: Extension<ApiContext>
+    ctx: Extension<ApiContext>,
 ) -> (StatusCode, Html<String>) {
     let template;
     if headers.get("hx-request").is_some() {
         template = ctx
             .template_env
-            .get_template("fragments/get_address_detail.html")
+            .get_template("fragments/form_insert_modal.html")
             .unwrap();
     } else {
         template = ctx
             .template_env
-            .get_template("completes/get_address_detail.html")
+            .get_template("completes/form_insert_modal.html")
             .unwrap();
     }
     let address_id = match Uuid::parse_str(&pk) {
-        Err(_) => return (
-            StatusCode::NOT_FOUND,
-            Html("".to_string())
-        ),
+        Err(_) => return (StatusCode::NOT_FOUND, Html("".to_string())),
         Ok(some_id) => some_id,
     };
     match queries::get_address_detail(address_id, &ctx.db).await {
@@ -152,14 +155,19 @@ async fn get_address_record(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Html("An error occurred".to_string()),
             )
-        },
-        Ok(None) => (
-            StatusCode::NOT_FOUND,
-            Html("".to_string())
-        ),
+        }
+        Ok(None) => (StatusCode::NOT_FOUND, Html("".to_string())),
         Ok(Some(address)) => (
             StatusCode::NOT_FOUND,
-            Html(template.render(context!(address => address)).unwrap())
+            Html(
+                template
+                    .render(context!(
+                        table_name => "Address",
+                        form => address.to_form(),
+                        record_save_url => format!("/admin/tables/address/{}", address.address_id.to_string()),
+                    ))
+                    .unwrap(),
+            ),
         ),
     }
 }
@@ -171,7 +179,6 @@ async fn update_address_record(Path(pk): Path<Uuid>) -> Html<String> {
 async fn delete_address_record(Path(pk): Path<Uuid>) -> Html<String> {
     todo!()
 }
-
 
 // Utilities; shared functions
 
@@ -224,4 +231,3 @@ async fn list_table_records(
         .unwrap();
     (StatusCode::OK, Html(rendered))
 }
-
