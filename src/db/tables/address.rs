@@ -1,6 +1,7 @@
-use crate::db::tables::{deserialize_dt, serialize_dt};
 use sqlx::types::time::OffsetDateTime;
 use uuid::Uuid;
+
+use crate::db::tables::{deserialize_dt, serialize_dt};
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
 pub struct AddressId(pub Uuid);

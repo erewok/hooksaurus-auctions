@@ -22,36 +22,55 @@
         <h1>Auctions Admin</h1>
     </div>
     <div class="uk-container uk-container-large">
-        <h1>{{ table_name }} Records </h1>
-        <button id="insertButton" hx-get="/admin/tables/{{ table_url_name }}/insert" hx-target="#insert-form"
-            class="uk-button uk-button-primary" _="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">Create {{
-            table_name }}</button>
+        <div id="main">
+            <div uk-grid>
+                <div class="uk-width-2-3@m">
+                    <div>
+                        <h1>{{ table_name }} Records </h1>
+                    </div>
+                </div>
 
-        <div id="insert-form"></div>
+                <div class="uk-width-auto@m">
+                    <div>
+                        <button id="insert-button" hx-get="/admin/tables/{{ table_url_name }}/insert"
+                            hx-target="#insert-form" class="uk-button uk-button-primary"
+                            _="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal">Create
+                            {{
+                            table_name }}</button>
+                    </div>
+                </div>
+            </div>
+            <div id="insert-form"></div>
 
-        {% if records %}
-        <table class="uk-table uk-table-justify uk-table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Created</th>
-                    <th>Modified</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in records %}
-                <tr>
-                    <td><a href="/admin/tables/{{ table_name }}/{{ row.pk }}">{{ row.name }}</a></td>
-                    <td>{{ row.created }}</td>
-                    <td>{{ row.modified }}</td>
-                </tr>
-                {% endfor %} {% if next_page %}
-                <a href="/admin/tables/{{ table_name }}?pg={{ next_page }}" class="uk-button uk-button-primary">Next
-                    page</button>
-                    {% endif %}
-            </tbody>
-        </table>
-        {% endif %}
+            {% if records %}
+            <table class="uk-table uk-table-justify uk-table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Created</th>
+                        <th>Modified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in records %}
+                    <tr>
+                        <td><a hx-get="/admin/tables/{{ table_url_name }}/{{ row.pk }}" hx-push-url="true">{{
+                                row.name|title
+                                }}</a>
+                        </td>
+                        <td>{{ row.created_at }}</td>
+                        <td>{{ row.updated_at }}</td>
+                    </tr>
+                    {% endfor %} {% if next_page %}
+                    <a hx-get="/admin/tables/{{ table_url_name }}?pg={{ next_page }}" hx-push-url="true"
+                        class="uk-button uk-button-primary">Next
+                        page</button>
+                        {% endif %}
+                </tbody>
+
+            </table>
+            {% endif %}
+        </div>
     </div>
 
 </body>
