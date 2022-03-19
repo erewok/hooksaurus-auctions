@@ -11,7 +11,7 @@ license = "MPL-2.0"
 
 [dependencies]
 anyhow = "1.0.48"
-argon2 = "0.3.1"
+argon2 = "0.4.0"
 async-trait = "0.1.51"
 axum = { version = "0.4.8", features = ["headers", "default", "json", "tower-log"] }
 clap = { version = "3.1.0", features = ["derive", "env"] }
@@ -34,5 +34,9 @@ tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 tower = "0.4.12"
 tower-http = { version = "0.2.3", features = ["fs", "cors", "trace"] }
 tracing = "0.1.31"
+tracing-appender = "0.2.2"
+tracing-bunyan-formatter = "0.3.2"
+tracing-futures = "0.2.5"
+tracing-log = "0.1.2"
 tracing-subscriber = { version="0.3.9", features = ["env-filter"] }
 uuid = { version = "0.8", features = ["serde"] }
