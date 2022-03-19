@@ -119,24 +119,23 @@ impl ToForm for tables::auction::Auction {
                 <textarea class="uk-textarea" rows="5" placeholder="description" name="description" value="{}"></textarea>
             </div>
             <div class="uk-margin">
-                <input data-uk-datepicker="{{format:'YYYY-MM-DD'}}" name="start_date_date" required value="{}">
-                <input data-uk-timepicker="{{format:'12h'}}" name="start_date_time" required value="{}">
+                <label class="uk-form-label">Start Date</label>
+                <input class="uk-input" type="datetime-local" name="start_date" required value="{}">
             </div>
             <div class="uk-margin">
-                <input data-uk-datepicker="{{format:'DD.MM.YYYY'}}" name="end_date_date" required value="{}">
-                <input data-uk-timepicker="{{format:'12h'}}" name="end_date_time" required value="{}">
+                <label class="uk-form-label">End Date</label>
+                <input class="uk-input" type="datetime-local" name="end_date" required value="{}">
             </div>
             <div class="uk-margin">
+                <label class="uk-form-label">Auction Benefits Organization</label>
                 <input class="uk-input" type="text" name="benefits_organization_id"
                     placeholder="Shore Sanctuary" required value="{}">
             </div>
         "##,
             self.title,
             self.description,
-            self.start_date.date().format("%Y-%m-%d"),
-            self.start_date.time().format("%H:%M:%S"),
-            self.end_date.date().format("%Y-%m-%d"),
-            self.end_date.time().format("%H:%M:%S"),
+            self.start_date.format("%Y-%m-%d %H:%M"),
+            self.end_date.format("%Y-%m-%d %H:%M"),
             self.benefits_organization_id
                 .as_ref()
                 .map(|t| t.to_string())
@@ -152,14 +151,15 @@ impl ToForm for tables::auction::Auction {
                 <textarea class="uk-textarea" rows="5" placeholder="description" name="description"></textarea>
             </div>
             <div class="uk-margin">
-                <input data-uk-datepicker="{{format:'YYYY-MM-DD'}}" name="start_date_date" required>
-                <input data-uk-timepicker="{{format:'12h'}}" name="start_date_time" required>
+                <label class="uk-form-label">Start Date</label>
+                <input class="uk-input" type="datetime-local" name="start_date" required>
             </div>
             <div class="uk-margin">
-                <input data-uk-datepicker="{{format:'DD.MM.YYYY'}}" name="end_date_date" required>
-                <input data-uk-timepicker="{{format:'12h'}}" name="end_date_time" required>
+                <label class="uk-form-label">End Date</label>
+                <input class="uk-input" type="datetime-local" name="end_date" required>
             </div>
             <div class="uk-margin">
+                <label class="uk-form-label">Auction Benefits Organization</label>
                 <input class="uk-input" type="text" name="benefits_organization_id"
                     placeholder="Shore Sanctuary" required>
             </div>
