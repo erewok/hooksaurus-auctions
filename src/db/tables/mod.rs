@@ -10,7 +10,7 @@ pub mod organization;
 pub mod user;
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
-pub struct Etag(Uuid);
+pub struct Etag(pub Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 #[serde(rename_all = "kebab-case")]

@@ -3,7 +3,7 @@ use sqlx::types::time::OffsetDateTime;
 use uuid::Uuid;
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
-pub struct AddressId(Uuid);
+pub struct AddressId(pub Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Address {

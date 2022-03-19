@@ -20,6 +20,7 @@ pub fn router() -> Router {
     Router::new()
         .route("/admin", get(admin_root))
         .route("/admin/tables", get(list_tables))
+        // address
         .route("/admin/tables/address", get(list_address))
         .route(
             "/admin/tables/address/insert",
@@ -81,6 +82,99 @@ async fn list_address(
     list_table_records(Table::Address, pagination, headers, ctx).await
 }
 
+#[instrument(skip(ctx))]
+async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>) -> Html<String> {
+    let template;
+    if headers.get("hx-request").is_some() {
+        template = ctx
+            .template_env
+            .get_template("fragments/address_insert_modal.html")
+            .unwrap();
+    } else {
+        template = ctx
+            .template_env
+            .get_template("completes/address_insert_modal.html")
+            .unwrap();
+    }
+    let rendered = template.render(context!(false)).unwrap();
+    Html(rendered)
+}
+
+async fn insert_address(
+    form: Form<tables::address::AddressFromForm>,
+    headers: HeaderMap,
+    ctx: Extension<ApiContext>,
+) -> (StatusCode, Html<String>) {
+    let address: tables::address::AddressFromForm = form.0;
+    // insert new address
+    event!(Level::INFO, event_msg = "Inserting new address", address=?address);
+    match queries::insert_address_from_form(address, &ctx.db).await {
+        Ok(_) => list_table_records(Table::Address, Pagination::default(), headers, ctx).await,
+        Err(e) => {
+            event!(Level::ERROR, event_msg="Error inserting Address record", err=?e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Html("An error occurred".to_string()),
+            )
+        }
+    }
+    // send back listings again
+}
+
+async fn get_address_record(
+    Path(pk): Path<String>,
+    headers: HeaderMap,
+    ctx: Extension<ApiContext>
+) -> (StatusCode, Html<String>) {
+    let template;
+    if headers.get("hx-request").is_some() {
+        template = ctx
+            .template_env
+            .get_template("fragments/get_address_detail.html")
+            .unwrap();
+    } else {
+        template = ctx
+            .template_env
+            .get_template("completes/get_address_detail.html")
+            .unwrap();
+    }
+    let address_id = match Uuid::parse_str(&pk) {
+        Err(_) => return (
+            StatusCode::NOT_FOUND,
+            Html("".to_string())
+        ),
+        Ok(some_id) => some_id,
+    };
+    match queries::get_address_detail(address_id, &ctx.db).await {
+        Err(e) => {
+            event!(Level::ERROR, event_msg="Error retrieving Address record", err=?e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Html("An error occurred".to_string()),
+            )
+        },
+        Ok(None) => (
+            StatusCode::NOT_FOUND,
+            Html("".to_string())
+        ),
+        Ok(Some(address)) => (
+            StatusCode::NOT_FOUND,
+            Html(template.render(context!(address => address)).unwrap())
+        ),
+    }
+}
+
+async fn update_address_record(Path(pk): Path<Uuid>) -> Html<String> {
+    todo!()
+}
+
+async fn delete_address_record(Path(pk): Path<Uuid>) -> Html<String> {
+    todo!()
+}
+
+
+// Utilities; shared functions
+
 async fn list_table_records(
     table: Table,
     pagination: Pagination,
@@ -131,53 +225,3 @@ async fn list_table_records(
     (StatusCode::OK, Html(rendered))
 }
 
-#[instrument(skip(ctx))]
-async fn get_address_insert_form(headers: HeaderMap, ctx: Extension<ApiContext>) -> Html<String> {
-    let template;
-    if headers.get("hx-request").is_some() {
-        template = ctx
-            .template_env
-            .get_template("fragments/address_insert_modal.html")
-            .unwrap();
-    } else {
-        template = ctx
-            .template_env
-            .get_template("completes/address_insert_modal.html")
-            .unwrap();
-    }
-    let rendered = template.render(context!(false)).unwrap();
-    Html(rendered)
-}
-
-async fn insert_address(
-    form: Form<tables::address::AddressFromForm>,
-    headers: HeaderMap,
-    ctx: Extension<ApiContext>,
-) -> (StatusCode, Html<String>) {
-    let address: tables::address::AddressFromForm = form.0;
-    // insert new address
-    event!(Level::INFO, event_msg = "Inserting new address", address=?address);
-    match queries::insert_address_from_form(address, &ctx.db).await {
-        Ok(_) => list_table_records(Table::Address, Pagination::default(), headers, ctx).await,
-        Err(e) => {
-            event!(Level::ERROR, event_msg="Error inserting Address record", err=?e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Html("An error occurred".to_string()),
-            )
-        }
-    }
-    // send back listings again
-}
-
-async fn get_address_record(Path(pk): Path<Uuid>) -> Html<String> {
-    todo!()
-}
-
-async fn update_address_record(Path(pk): Path<Uuid>) -> Html<String> {
-    todo!()
-}
-
-async fn delete_address_record(Path(pk): Path<Uuid>) -> Html<String> {
-    todo!()
-}

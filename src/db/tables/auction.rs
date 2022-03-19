@@ -3,7 +3,7 @@ use sqlx::types::{time::OffsetDateTime, Decimal};
 use uuid::Uuid;
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
-pub struct AuctionId(Uuid);
+pub struct AuctionId(pub Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Auction {
@@ -35,7 +35,7 @@ pub struct Auction {
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
-pub struct AuctionItemId(Uuid);
+pub struct AuctionItemId(pub Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct AuctionItem {
@@ -83,7 +83,7 @@ pub struct AuctionItem {
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
-pub struct AuctionItemBidId(Uuid);
+pub struct AuctionItemBidId(pub Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct AuctionItemBid {

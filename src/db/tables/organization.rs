@@ -12,7 +12,7 @@ pub enum OrgType {
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, sqlx::Type)]
 
-pub struct OrganizationId(Uuid);
+pub struct OrganizationId(pub Uuid);
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Organization {
