@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::types::time::OffsetDateTime;
 
 use crate::db::tables::user;
-use crate::db::tables::{deserialize_dt, serialize_dt};
+use hooksaurus_core::datetimes::{deserialize_dt, serialize_dt};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 // Just trying this out to avoid the tautology of `ArticleBody<Article>`

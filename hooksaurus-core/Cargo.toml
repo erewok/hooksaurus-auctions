@@ -1,0 +1,15 @@
+[package]
+name = "hooksaurus-core"
+version = "0.2.0"
+edition = "2021"
+publish = false
+authors = [
+    "Erik Aker <eraker@gmail.com>",
+    "Shannon Jarrell <scjarrell@gmail.com>",
+]
+license = "MPL-2.0"
+
+[dependencies]
+serde = { version = "1.0.130", features = ["derive"] }
+time = { version = "0.3.7", features = ["formatting", "parsing"] }
+uuid = { version = "1.1.2", features = ["serde"] }

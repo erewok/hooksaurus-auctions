@@ -1,4 +1,4 @@
-use crate::db::tables::{deserialize_dt, serialize_dt};
+use hooksaurus_core::datetimes::{deserialize_dt, serialize_dt};
 use sqlx::types::time::OffsetDateTime;
 use uuid::Uuid;
 

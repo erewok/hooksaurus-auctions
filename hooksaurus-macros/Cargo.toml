@@ -1,0 +1,19 @@
+[package]
+name = "hooksaurus-macros"
+version = "0.2.0"
+edition = "2021"
+publish = false
+authors = [
+    "Erik Aker <eraker@gmail.com>",
+    "Shannon Jarrell <scjarrell@gmail.com>",
+]
+license = "MPL-2.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+hooksaurus-core = { version = "0.2.0", path = "../hooksaurus-core" } 
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = {version="1.0",features=["full","fold"]}

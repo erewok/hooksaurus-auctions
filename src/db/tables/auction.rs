@@ -17,24 +17,24 @@ pub struct Auction {
     pub title: String,
     pub description: String,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub start_date: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub end_date: OffsetDateTime,
     pub benefits_organization_id: Option<super::organization::OrganizationId>,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub created_at: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub updated_at: OffsetDateTime,
     pub etag: super::Etag,
@@ -45,13 +45,13 @@ pub struct AuctionFromForm {
     pub title: String,
     pub description: String,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub start_date: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub end_date: OffsetDateTime,
     pub benefits_organization_id: Option<super::organization::OrganizationId>,
@@ -93,23 +93,23 @@ pub struct AuctionItem {
     pub benefits_organization_id: Option<super::organization::OrganizationId>,
 
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub active_start_date: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub active_end_date: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub created_at: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub updated_at: OffsetDateTime,
     pub etag: super::Etag,
@@ -137,13 +137,13 @@ pub struct AuctionItemFromForm {
     pub benefits_organization_id: Option<super::organization::OrganizationId>,
 
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub active_start_date: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub active_end_date: OffsetDateTime,
 }
@@ -175,13 +175,13 @@ pub struct AuctionItemBid {
     pub is_winning_bid: bool,
 
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub created_at: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub updated_at: OffsetDateTime,
     pub etag: super::Etag,
@@ -215,13 +215,13 @@ pub struct AuctionItemDelivery {
     pub shipping_address: super::address::AddressId,
     pub shipping_fee: Option<Decimal>,
     #[serde(
-        deserialize_with = "tables::deserialize_optional_datetime",
-        serialize_with = "tables::serialize_option_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_optional_datetime",
+        serialize_with = "hooksaurus_core::datetimes::serialize_option_dt"
     )]
     pub shipped_datetime: Option<OffsetDateTime>,
     #[serde(
-        deserialize_with = "tables::deserialize_optional_datetime",
-        serialize_with = "tables::serialize_option_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_optional_datetime",
+        serialize_with = "hooksaurus_core::datetimes::serialize_option_dt"
     )]
     pub delivered: Option<OffsetDateTime>,
     // columns below are relating to storing delivery info and exceptions
@@ -234,13 +234,13 @@ pub struct AuctionItemDelivery {
     pub tracking_number: Option<String>,
 
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub created_at: OffsetDateTime,
     #[serde(
-        deserialize_with = "tables::deserialize_dt",
-        serialize_with = "tables::serialize_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
+        serialize_with = "hooksaurus_core::datetimes::serialize_dt"
     )]
     pub updated_at: OffsetDateTime,
     pub etag: super::Etag,
@@ -256,13 +256,13 @@ pub struct AuctionItemDeliveryFromForm {
     pub shipping_address: super::address::AddressId,
     pub shipping_fee: Option<Decimal>,
     #[serde(
-        deserialize_with = "tables::deserialize_optional_datetime",
-        serialize_with = "tables::serialize_option_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_optional_datetime",
+        serialize_with = "hooksaurus_core::datetimes::serialize_option_dt"
     )]
     pub shipped_datetime: Option<OffsetDateTime>,
     #[serde(
-        deserialize_with = "tables::deserialize_optional_datetime",
-        serialize_with = "tables::serialize_option_dt"
+        deserialize_with = "hooksaurus_core::datetimes::deserialize_optional_datetime",
+        serialize_with = "hooksaurus_core::datetimes::serialize_option_dt"
     )]
     pub delivered: Option<OffsetDateTime>,
     // columns below are relating to storing delivery info and exceptions

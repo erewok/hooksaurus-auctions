@@ -1,40 +1,11 @@
-use sqlx::types::time::OffsetDateTime;
-use uuid::Uuid;
+use time::format_description::well_known::Rfc3339;
 
 mod handlers;
 mod queries;
 
-use crate::db::tables::{self, serialize_dt};
+use crate::db::tables;
 pub use handlers::router;
-
-#[derive(Clone, Debug, serde::Deserialize)]
-pub struct Pagination {
-    pub page: usize,
-    pub per_page: usize,
-}
-impl Default for Pagination {
-    fn default() -> Self {
-        Self {
-            page: 0,
-            per_page: 30,
-        }
-    }
-}
-
-#[derive(Debug, serde::Serialize)]
-pub struct AdminRow {
-    pub pk: Uuid,
-    pub name: String,
-    #[serde(serialize_with = "serialize_dt")]
-    pub created_at: OffsetDateTime,
-    #[serde(serialize_with = "serialize_dt")]
-    pub updated_at: OffsetDateTime,
-}
-
-pub trait ToForm {
-    fn to_form(&self) -> String;
-    fn to_empty_form() -> String;
-}
+use hooksaurus_core::{AdminRow, Pagination, ToForm};
 
 impl ToForm for tables::address::Address {
     fn to_form(&self) -> String {
@@ -134,8 +105,8 @@ impl ToForm for tables::auction::Auction {
         "##,
             self.title,
             self.description,
-            self.start_date.format("%Y-%m-%d %H:%M"),
-            self.end_date.format("%Y-%m-%d %H:%M"),
+            self.start_date.format(&Rfc3339).unwrap_or_default(),
+            self.end_date.format(&Rfc3339).unwrap_or_default(),
             self.benefits_organization_id
                 .as_ref()
                 .map(|t| t.to_string())

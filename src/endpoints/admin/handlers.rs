@@ -11,9 +11,9 @@ use tracing::{event, instrument, Level};
 use uuid::Uuid;
 
 use crate::db::tables::{self, Table};
-use crate::endpoints::admin::{AdminRow, Pagination, ToForm};
 use crate::endpoints::ApiContext;
 use crate::error::Result;
+use hooksaurus_core::{AdminRow, Pagination, ToForm};
 
 use super::queries;
 

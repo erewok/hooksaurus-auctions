@@ -1,3 +1,10 @@
+[workspace]
+members = [
+    ".",
+    "hooksaurus-core",
+    "hooksaurus-macros",
+]
+
 [package]
 name = "hooksaurus-auctions"
 version = "0.2.0"
@@ -13,30 +20,34 @@ license = "MPL-2.0"
 anyhow = "1.0.48"
 argon2 = "0.4.0"
 async-trait = "0.1.51"
-axum = { version = "0.4.8", features = ["headers", "default", "json", "tower-log"] }
-clap = { version = "3.1.0", features = ["derive", "env"] }
-env_logger = "0.9.0"
+axum = { version = "0.6.4", features = ["headers", "default", "json", "tower-log"] }
+clap = { version = "4.1.4", features = ["derive", "env"] }
+env_logger = "0.10.0"
 futures = "0.3"
+hooksaurus-core = { version = "0.2.0", path = "hooksaurus-core" } 
+hooksaurus-macros = { version = "0.2.0", path = "hooksaurus-macros" } 
 hmac = "0.12.1"
 hyper = { version = "0.14.17" }
 itertools = "0.10.1"
 jwt = "0.16.0"
 log = "0.4.14"
-minijinja = { version = "0.14.0", features = ["source"] }
+minijinja = { version = "0.30.2", features = ["source"] }
 rand = "0.8.4"
 serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0.73"
 sha2 = "0.10.2"
 sql-builder = "3.1.1"
-sqlx = { version = "0.5.11", features = ["decimal", "runtime-tokio-native-tls", "postgres", "uuid", "time"] }
+sqlx = { version = "0.6.2", features = ["decimal", "runtime-tokio-native-tls", "postgres", "uuid", "time"] }
 thiserror = "1.0.30"
+# this version comes from sqlx
+time = { version = "0.3.7", features = ["parsing"] }
 tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 tower = "0.4.12"
-tower-http = { version = "0.2.3", features = ["fs", "cors", "trace"] }
+tower-http = { version = "0.3.5", features = ["fs", "cors", "trace"] }
 tracing = "0.1.31"
 tracing-appender = "0.2.2"
 tracing-bunyan-formatter = "0.3.2"
 tracing-futures = "0.2.5"
 tracing-log = "0.1.2"
 tracing-subscriber = { version="0.3.9", features = ["env-filter"] }
-uuid = { version = "0.8", features = ["serde"] }
+uuid = { version = "1.1.2", features = ["serde"] }

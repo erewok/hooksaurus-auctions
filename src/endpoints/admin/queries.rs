@@ -3,8 +3,7 @@ use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{db::tables, error::Result, Error};
-
-use super::{AdminRow, Pagination, ToForm};
+use hooksaurus_core::{AdminRow, Pagination, ToForm};
 
 #[instrument(skip(db))]
 pub async fn get_address_admin_rows(pagination: &Pagination, db: &PgPool) -> Result<Vec<AdminRow>> {
