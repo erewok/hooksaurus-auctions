@@ -15,6 +15,8 @@ impl std::fmt::Display for AuctionId {
 pub struct Auction {
     pub auction_id: AuctionId,
     pub title: String,
+    // url-friendly title: saved for easy querying
+    pub slug: String,
     pub description: String,
     #[serde(
         deserialize_with = "hooksaurus_core::datetimes::deserialize_dt",
@@ -77,14 +79,16 @@ pub struct AuctionItem {
     pub auction_id: AuctionId,
     // This may be foreign-keyed to _another_ AuctionItem, which is called its "basket"
     pub basket_id: Option<AuctionItemId>,
-
+    
     // Monetary amounts relating to this item
     pub expected_retail_value: Decimal,
     pub minimum_bid_amount: Decimal,
     pub buy_it_now_amount: Option<Decimal>,
-
+    
     // Metadata
     pub title: String,
+    // url-friendly title
+    pub slug: String,
     pub description: String,
     pub featured_image_filepath: String,
     pub image_dir: String,

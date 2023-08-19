@@ -158,6 +158,7 @@ create table auction
 (
     auction_id  uuid primary key     default uuid_generate_v1mc(),
     title       text        not null,
+    slug        text unique not null,
     description text        not null default '',
     start_date  timestamptz not null default now(),
     end_date    timestamptz not null default now() + interval '10' day,
@@ -188,6 +189,7 @@ create table auction_item
 
     -- title, description, tags (for searching), photos
     title       text        not null,
+    slug        text unique not null,
     description text        not null default '',
     featured_image_filepath text not null,
     image_dir   text        not null,
